@@ -1,5 +1,7 @@
 FROM nvidia/cuda:13.2.1-cudnn-devel-ubuntu24.04
 
+ARG TARGETARCH
+
 ENV LANG="C.UTF-8"
 ENV HOME=/root
 ENV DEBIAN_FRONTEND=noninteractive
@@ -185,7 +187,7 @@ RUN apt update && \
         libatk1.0-0 \
         && \
     rm -rf /var/lib/apt/lists/* && \
-    curl -L 'https://github.com/nats-io/natscli/releases/download/v0.3.2/nats-0.3.2-amd64.deb' -o nats.deb && \
+    curl -L "https://github.com/nats-io/natscli/releases/download/v0.4.0/nats-0.4.0-$TARGETARCH.deb" -o nats.deb && \
     dpkg -i nats.deb && rm nats.deb
 
 RUN add-apt-repository ppa:mozillateam/ppa && \
