@@ -159,7 +159,7 @@ RUN chmod +x /opt/entrypoint.sh
 ENTRYPOINT  ["/opt/entrypoint.sh"]
 
 ### Mineth ###
-CMD [ "sleep", "infinity" ]
+CMD [ "-c", "sleep infinity" ]
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 ENV UV_NO_CACHE=1
