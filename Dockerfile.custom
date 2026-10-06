@@ -218,6 +218,7 @@ RUN add-apt-repository ppa:mozillateam/ppa && \
         gocryptfs \
         securefs \
         fuse3 \
+        parallel \
         && \
     rm -rf /var/lib/apt/lists/* 
 
