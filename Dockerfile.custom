@@ -1,3 +1,20 @@
+FROM nvidia/cuda:13.2.1-cudnn-devel-ubuntu24.04 AS hf-mount
+
+RUN apt update && \
+    apt install -y \
+        curl \
+        pkg-config \
+        libssl-dev \
+        && \
+    rm -rf /var/lib/apt/lists/* 
+
+ENV RUSTUP_HOME=/opt/rust
+ENV CARGO_HOME=/opt/rust
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path && \
+    /opt/rust/bin/cargo install --git https://github.com/huggingface/hf-mount.git --locked --tag v0.13.1 --features nfs,fuse && \
+    chmod +x /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs
+
+
 FROM nvidia/cuda:13.2.1-cudnn-devel-ubuntu24.04
 
 ARG TARGETARCH
@@ -188,13 +205,20 @@ RUN apt update && \
         libatk1.0-0 \
         && \
     rm -rf /var/lib/apt/lists/* && \
-    curl -L "https://github.com/nats-io/natscli/releases/download/v0.4.0/nats-0.4.0-$TARGETARCH.deb" -o nats.deb && \
+    curl -L "https://github.com/nats-io/natscli/releases/download/v0.5.0/nats-0.5.0-$TARGETARCH.deb" -o nats.deb && \
     dpkg -i nats.deb && rm nats.deb
 
 RUN add-apt-repository ppa:mozillateam/ppa && \
     apt update && \
     apt install -y \
         ffmpeg \
+        sox \
         firefox-esr \
+        less \
+        gocryptfs \
+        securefs \
+        fuse3 \
         && \
     rm -rf /var/lib/apt/lists/* 
+
+COPY --from=hf-mount /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs /usr/local/bin
