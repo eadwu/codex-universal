@@ -214,6 +214,8 @@ RUN add-apt-repository ppa:mozillateam/ppa && \
         ffmpeg \
         sox \
         firefox-esr \
+        libegl1 \
+        libegl-mesa0 \
         less \
         gocryptfs \
         securefs \
