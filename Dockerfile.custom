@@ -221,6 +221,7 @@ RUN add-apt-repository ppa:mozillateam/ppa && \
         securefs \
         fuse3 \
         parallel \
+        xdotool \
         && \
     rm -rf /var/lib/apt/lists/* 
 
