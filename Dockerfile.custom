@@ -222,7 +222,9 @@ RUN add-apt-repository ppa:mozillateam/ppa && \
         fuse3 \
         parallel \
         xdotool \
+        libgles2 \
+        libegl1 \
         && \
-    rm -rf /var/lib/apt/lists/* 
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=hf-mount /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs /usr/local/bin
