@@ -18,6 +18,8 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path && \
 # --rev e0f2023e7304b51e264071ccfcc21607cae6dcbc
 # --rev 5a89fad12b78b939c2e625c9620109c10b303366
 
+# --rev 129f76bfc6620a32b720aa02dcae3f7a9ea8fd20 ???
+
 FROM ghcr.io/eadwu/llmenv:latest
 
 # RUN rm -rf /usr/local/bin/hf-mount /usr/local/bin/hf-mount-fuse /usr/local/bin/hf-mount-nfs
@@ -233,6 +235,7 @@ RUN add-apt-repository ppa:mozillateam/ppa && \
         xdotool \
         libgles2 \
         libegl1 \
+        tmux \
         && \
     rm -rf /var/lib/apt/lists/*
 
