@@ -212,16 +212,9 @@ RUN apt update && \
         xauth \
         libatk1.0-0 \
         && \
-    rm -rf /var/lib/apt/lists/* && \
-    curl -L "https://github.com/nats-io/natscli/releases/download/v0.5.0/nats-0.5.0-$TARGETARCH.deb" -o nats.deb && \
-    dpkg -i nats.deb && rm nats.deb
-
-RUN add-apt-repository ppa:mozillateam/ppa && \
-    apt update && \
     apt install -y \
         ffmpeg \
         sox \
-        firefox-esr \
         libegl1 \
         libegl-mesa0 \
         less \
@@ -234,6 +227,15 @@ RUN add-apt-repository ppa:mozillateam/ppa && \
         libegl1 \
         tmux \
         squashfs-tools \
+        && \
+    rm -rf /var/lib/apt/lists/* && \
+    curl -L "https://github.com/nats-io/natscli/releases/download/v0.5.2/nats-0.5.2-$TARGETARCH.deb" -o nats.deb && \
+    dpkg -i nats.deb && rm nats.deb
+
+RUN add-apt-repository ppa:mozillateam/ppa && \
+    apt update && \
+    apt install -y \
+        firefox-esr \
         && \
     rm -rf /var/lib/apt/lists/*
 
