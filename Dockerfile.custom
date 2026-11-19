@@ -233,6 +233,7 @@ RUN add-apt-repository ppa:mozillateam/ppa && \
         libgles2 \
         libegl1 \
         tmux \
+        squashfs-tools \
         && \
     rm -rf /var/lib/apt/lists/*
 
