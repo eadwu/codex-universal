@@ -239,4 +239,7 @@ RUN add-apt-repository ppa:mozillateam/ppa && \
         && \
     rm -rf /var/lib/apt/lists/*
 
+RUN curl -L https://mirror.blender.org/release/Blender5.3/blender-5.3.0-linux-x64.tar.xz | tar xvfJ - && \
+    mv blender-* /opt/blender
+
 COPY --from=hf-mount /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs /usr/local/bin
