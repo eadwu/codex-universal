@@ -14,6 +14,8 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
+  BLENDER_IMAGE_NAME: eadwu/blender
+  HF_MOUNT_IMAGE_NAME: eadwu/hf-mount
   IMAGE_NAME: eadwu/llmenv
 
 jobs:
@@ -30,6 +32,34 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - name: Build & push hf-mount (amd64)
+        id: build-hf-mount
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          file: Dockerfile.hf-mount
+          platforms: linux/amd64
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ env.REGISTRY }}/${{ env.HF_MOUNT_IMAGE_NAME }}:amd64-${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.HF_MOUNT_IMAGE_NAME }}:latest
+          cache-to:   type=inline
+          provenance: false
+          sbom: false
+          secrets: |
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+      - name: Build & push Blender (amd64)
+        id: build-blender
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          file: Dockerfile.blender
+          platforms: linux/amd64
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ env.REGISTRY }}/${{ env.BLENDER_IMAGE_NAME }}:amd64-${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.BLENDER_IMAGE_NAME }}:latest
+          cache-to:   type=inline
+          provenance: false
+          sbom: false
+          secrets: |
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
       - name: Build & push (amd64)
         id: build
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
@@ -58,6 +88,34 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - name: Build & push hf-mount (arm64)
+        id: build-hf-mount
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          file: Dockerfile.hf-mount
+          platforms: linux/arm64
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ env.REGISTRY }}/${{ env.HF_MOUNT_IMAGE_NAME }}:arm64-${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.HF_MOUNT_IMAGE_NAME }}:latest
+          cache-to:   type=inline
+          provenance: false
+          sbom: false
+          secrets: |
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+      - name: Build & push blender (arm64)
+        id: build-blender
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          file: Dockerfile.blender
+          platforms: linux/arm64
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ env.REGISTRY }}/${{ env.BLENDER_IMAGE_NAME }}:arm64-${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.BLENDER_IMAGE_NAME }}:latest
+          cache-to:   type=inline
+          provenance: false
+          sbom: false
+          secrets: |
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
       - name: Build & push (arm64)
         id: build
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6

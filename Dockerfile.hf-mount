@@ -1,0 +1,18 @@
+FROM nvidia/cuda:13.4.2-cudnn-devel-ubuntu26.04
+
+RUN apt update && \
+    apt install -y \
+        curl \
+        pkg-config \
+        libssl-dev \
+        && \
+    rm -rf /var/lib/apt/lists/* 
+
+ENV RUSTUP_HOME=/opt/rust
+ENV CARGO_HOME=/opt/rust
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path && \
+    /opt/rust/bin/cargo install --git https://github.com/huggingface/hf-mount.git --locked --tag v0.14.0 --features nfs,fuse && \
+    chmod +x /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs
+
+# --tag v0.13.6
+# --rev 5a89fad12b78b939c2e625c9620109c10b303366

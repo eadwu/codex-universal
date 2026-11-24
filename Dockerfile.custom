@@ -1,71 +1,3 @@
-FROM nvidia/cuda:13.4.2-cudnn-devel-ubuntu26.04 AS blender
-
-RUN apt update && \
-    apt install -y \
-        python3 \
-        git \
-        git-lfs \
-        && \
-    apt install -y \
-        build-essential \
-        git \
-        git-lfs \
-        cmake \
-        libx11-dev \
-        libxxf86vm-dev \
-        libxcursor-dev \
-        libxi-dev \
-        libxrandr-dev \
-        libxinerama-dev \
-        libxkbcommon-dev \
-        libwayland-dev \
-        wayland-protocols \
-        libdbus-1-dev \
-        libgl-dev \
-        libegl-dev \
-        && \
-    apt install -y \
-        ninja-build \
-        cmake-curses-gui \
-        cmake-gui \
-        patch \
-        libjack-jackd2-dev \
-        libpulse-dev \
-        libpipewire-0.3-dev \
-        && \
-    rm -rf /var/lib/apt/lists/* 
-
-RUN mkdir -p /blender.git && \
-    git clone https://projects.blender.org/blender/blender.git --branch v5.3.0 /blender.git/blender && cd /blender.git/blender && \
-    python3 ./build_files/linux/install_linux_packages.py && \
-    make update && \
-    make
-
-FROM nvidia/cuda:13.4.2-cudnn-devel-ubuntu26.04 AS hf-mount
-
-RUN apt update && \
-    apt install -y \
-        curl \
-        pkg-config \
-        libssl-dev \
-        && \
-    rm -rf /var/lib/apt/lists/* 
-
-ENV RUSTUP_HOME=/opt/rust
-ENV CARGO_HOME=/opt/rust
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path && \
-    /opt/rust/bin/cargo install --git https://github.com/huggingface/hf-mount.git --locked --tag v0.14.0 --features nfs,fuse && \
-    chmod +x /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs
-
-# --tag v0.13.6
-# --rev 5a89fad12b78b939c2e625c9620109c10b303366
-
-FROM ghcr.io/eadwu/llmenv:latest
-
-# RUN rm -rf /usr/local/bin/hf-mount /usr/local/bin/hf-mount-fuse /usr/local/bin/hf-mount-nfs
-COPY --from=hf-mount /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs /usr/local/bin
-
-
 FROM nvidia/cuda:13.4.2-cudnn-devel-ubuntu26.04
 
 ARG TARGETARCH
@@ -282,5 +214,5 @@ RUN add-apt-repository ppa:mozillateam/ppa && \
         && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=blender /blender.git/build_linux/bin /opt/blender
-COPY --from=hf-mount /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs /usr/local/bin
+COPY --from=ghcr.io/eadwu/blender:latest /blender.git/build_linux/bin /opt/blender
+COPY --from=ghcr.io/eadwu/hf-mount:latest /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs /usr/local/bin
