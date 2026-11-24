@@ -234,5 +234,5 @@ RUN add-apt-repository ppa:mozillateam/ppa && \
         && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=ghcr.io/eadwu/blender:latest /blender.git/build_linux/bin /opt/blender
+# COPY --from=ghcr.io/eadwu/blender:latest /blender.git/build_linux/bin /opt/blender
 COPY --from=hf-mount /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs /usr/local/bin
