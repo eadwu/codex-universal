@@ -1,3 +1,17 @@
+FROM nvidia/cuda:13.4.2-cudnn-devel-ubuntu26.04 AS browsers
+
+RUN apt update && \
+    apt install -y \
+        nodejs \
+        npm \
+        && \
+    rm -rf /var/lib/apt/lists/* 
+
+RUN mkdir -p /browsers && \
+    cd /browsers && npx --yes @puppeteer/browsers install chrome@stable && \
+    cd /browsers && npx --yes @puppeteer/browsers install firefox@stable
+
+
 FROM nvidia/cuda:13.4.2-cudnn-devel-ubuntu26.04 AS blender
 
 RUN apt update && \
@@ -274,12 +288,7 @@ RUN apt update && \
     curl -L "https://github.com/nats-io/natscli/releases/download/v0.5.2/nats-0.5.2-$TARGETARCH.deb" -o nats.deb && \
     dpkg -i nats.deb && rm nats.deb
 
-RUN add-apt-repository ppa:mozillateam/ppa && \
-    apt update && \
-    apt install -y \
-        firefox-esr \
-        && \
-    rm -rf /var/lib/apt/lists/*
 
+COPY --from=browsers /browsers /browsers
 COPY --from=blender /blender.git/build_linux/bin /opt/blender
 COPY --from=hf-mount /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs /usr/local/bin
