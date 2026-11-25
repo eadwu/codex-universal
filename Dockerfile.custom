@@ -1,3 +1,23 @@
+FROM nvidia/cuda:13.4.2-cudnn-devel-ubuntu26.04 AS nemo
+
+RUN apt update && \
+    apt install -y \
+        build-essential \
+        cmake \
+        ninja-build \
+        git \
+        pkg-config \
+        libsentencepiece-dev \
+        && \
+    rm -rf /var/lib/apt/lists/* 
+
+RUN git clone https://github.com/NVIDIA/NeMo-Speech.cpp.git /NeMo-Speech.cpp && \
+    cd /NeMo-Speech.cpp && git checkout v0.3.0 && \
+    git submodule update --init --recursive && \
+    scripts/configure.sh cuda-server && \
+    cmake --build --preset cuda-server
+
+
 FROM nvidia/cuda:13.4.2-cudnn-devel-ubuntu26.04 AS browsers
 
 RUN apt update && \
@@ -293,3 +313,4 @@ RUN apt update && \
 COPY --from=browsers /browsers /browsers
 COPY --from=blender /blender.git/build_linux/bin /opt/blender
 COPY --from=hf-mount /opt/rust/bin/hf-mount /opt/rust/bin/hf-mount-fuse /opt/rust/bin/hf-mount-nfs /usr/local/bin
+COPY --from=nemo /NeMo-Speech.cpp /NeMo-Speech.cpp
