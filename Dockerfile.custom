@@ -5,6 +5,7 @@ RUN apt update && \
         python3 \
         git \
         git-lfs \
+        ninja-build \
         && \
     apt install -y \
         build-essential \
@@ -39,7 +40,9 @@ RUN mkdir -p /blender.git && \
     git clone https://projects.blender.org/blender/blender.git --branch v5.3.0 /blender.git/blender && cd /blender.git/blender && \
     python3 ./build_files/linux/install_linux_packages.py && \
     make update && \
-    make
+    make ninja 
+
+    # -BUILD_CMAKE_ARGS="-DWITH_CYCLES_CUDA_BINARIES=ON -DWITH_CYCLES_DEVICE_OPTIX=OFF"
 
 
 FROM nvidia/cuda:13.4.2-cudnn-devel-ubuntu26.04 AS hf-mount
